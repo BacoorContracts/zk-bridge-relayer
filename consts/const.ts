@@ -12,18 +12,18 @@ export const WASM_PATH = "zk-proof/withdraw.wasm";
 export const ZKEY_PATH = "zk-proof/circuit_final.zkey";
 
 export const BRIDGE = {
-    43114: {
+    43113: {
         97: "0xb3C1eEE123A4311Bfe93244f445585A361d48B1D",
     },
 
     97: {
-        43114: "0xD7cD872524F023FB3Ada17fB7cB30eFb5bf8a397",
+        43113: "0xD7cD872524F023FB3Ada17fB7cB30eFb5bf8a397",
     },
 } as { [key: number]: { [key: number]: string } };
 
 export const COMMAND_GATE = {
-    43114: "0x6014332df6999F863b7B35e0d67eC3A4852c5001",
-    97: "0xC8fEF79e61E422F0c3903cC85612e495a72ddD32",
+    43113: "0x94baFDF976129CC2A510b00ee1E43fbE98299231",
+    97: "0x294D05eb93B7624E209e913A094d3B5a05D726B5",
 } as { [key: number]: string };
 
 export const CONNECT_STRING = "mongodb://127.0.0.1/bridge";
