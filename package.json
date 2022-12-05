@@ -26,6 +26,7 @@
     "@rainbow-me/rainbowkit": "latest",
     "@typechain/ethers-v5": "^10.1.1",
     "@zk-kit/incremental-merkle-tree": "^1.0.0",
+    "axios": "^1.2.0",
     "circomlib": "^2.0.5",
     "circomlibjs": "^0.1.7",
     "eth-sig-util": "^3.0.1",
