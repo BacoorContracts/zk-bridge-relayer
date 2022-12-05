@@ -1,0 +1,501 @@
+[
+    {
+        "inputs": [
+            {
+                "internalType": "contract IAuthority",
+                "name": "authority_",
+                "type": "address"
+            },
+            {
+                "internalType": "contract ITreasury",
+                "name": "vault_",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "payable",
+        "type": "constructor"
+    },
+    {
+        "inputs": [],
+        "name": "Base__AlreadySet",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "Base__Blacklisted",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "Base__Paused",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "Base__Unauthorized",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "CommandGate__ExecutionFailed",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "CommandGate__Expired",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "CommandGate__InvalidArgument",
+        "type": "error"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "CommandGate__UnknownAddress",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "FundForwarder__ForwardFailed",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "ProxyChecker__ProxyUnallowed",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "Transferable__InvalidArguments",
+        "type": "error"
+    },
+    {
+        "inputs": [],
+        "name": "Transferable__TransferFailed",
+        "type": "error"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "contract IAuthority",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "contract IAuthority",
+                "name": "to",
+                "type": "address"
+            }
+        ],
+        "name": "AuthorityUpdated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "bytes4",
+                "name": "functionSelector",
+                "type": "bytes4"
+            },
+            {
+                "indexed": true,
+                "internalType": "bytes",
+                "name": "params",
+                "type": "bytes"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "value",
+                "type": "uint256"
+            }
+        ],
+        "name": "Commanded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "Forwarded",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "from",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "to",
+                "type": "address"
+            }
+        ],
+        "name": "VaultUpdated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "addr",
+                "type": "address"
+            }
+        ],
+        "name": "Whitelisted",
+        "type": "event"
+    },
+    {
+        "inputs": [],
+        "name": "authority",
+        "outputs": [
+            {
+                "internalType": "contract IAuthority",
+                "name": "authority_",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IERC20Permit",
+                "name": "token_",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "value_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "deadline_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint8",
+                "name": "v",
+                "type": "uint8"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "r",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes32",
+                "name": "s",
+                "type": "bytes32"
+            },
+            {
+                "internalType": "bytes4",
+                "name": "fnSig_",
+                "type": "bytes4"
+            },
+            {
+                "internalType": "address",
+                "name": "contract_",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data_",
+                "type": "bytes"
+            }
+        ],
+        "name": "depositERC20PermitWithCommand",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "token_",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "value_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes4",
+                "name": "fnSig_",
+                "type": "bytes4"
+            },
+            {
+                "internalType": "address",
+                "name": "contract_",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data_",
+                "type": "bytes"
+            }
+        ],
+        "name": "depositERC20WithCommand",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256[]",
+                "name": "tokenIds_",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "address[]",
+                "name": "contracts_",
+                "type": "address[]"
+            },
+            {
+                "internalType": "bytes[]",
+                "name": "data_",
+                "type": "bytes[]"
+            }
+        ],
+        "name": "depositERC721MultiWithCommand",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "contract_",
+                "type": "address"
+            },
+            {
+                "internalType": "bytes4",
+                "name": "fnSig_",
+                "type": "bytes4"
+            },
+            {
+                "internalType": "bytes",
+                "name": "params_",
+                "type": "bytes"
+            }
+        ],
+        "name": "depositNativeTokenWithCommand",
+        "outputs": [],
+        "stateMutability": "payable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "from_",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tokenId_",
+                "type": "uint256"
+            },
+            {
+                "internalType": "bytes",
+                "name": "data_",
+                "type": "bytes"
+            }
+        ],
+        "name": "onERC721Received",
+        "outputs": [
+            {
+                "internalType": "bytes4",
+                "name": "",
+                "type": "bytes4"
+            }
+        ],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "original",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IERC20",
+                "name": "token_",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "amount_",
+                "type": "uint256"
+            }
+        ],
+        "name": "recoverERC20",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IERC721",
+                "name": "token_",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tokenId_",
+                "type": "uint256"
+            }
+        ],
+        "name": "recoverNFT",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IERC721Enumerable",
+                "name": "token_",
+                "type": "address"
+            }
+        ],
+        "name": "recoverNFTs",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "recoverNative",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract IAuthority",
+                "name": "authority_",
+                "type": "address"
+            }
+        ],
+        "name": "updateAuthority",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "contract ITreasury",
+                "name": "treasury_",
+                "type": "address"
+            }
+        ],
+        "name": "updateTreasury",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "vault",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "addr_",
+                "type": "address"
+            }
+        ],
+        "name": "whitelistAddress",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "stateMutability": "payable",
+        "type": "receive"
+    }
+]
