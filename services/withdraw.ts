@@ -50,11 +50,15 @@ const queryDepositEvents = async (
     const currentBlockNum = (await signer.provider?.getBlockNumber()) as number;
     const deployedBlockNum = bridgeFrom.deployTransaction.blockNumber as number;
 
+    console.log({ deployedBlockNum });
+
     const numBatches =
         (currentBlockNum - deployedBlockNum) / EVENT_QUERY_BATCH_SIZE;
     const cursors = Array.from(Array(numBatches).keys()).map(
         (cursor) => cursor * EVENT_QUERY_BATCH_SIZE + deployedBlockNum
     );
+
+    console.log({ numBatches, cursors });
 
     let events!: DepositedEvent[];
     cursors.forEach(async (_, index) => {
@@ -66,6 +70,8 @@ const queryDepositEvents = async (
             )
         );
     });
+
+    console.log({ events });
 
     return events;
 };

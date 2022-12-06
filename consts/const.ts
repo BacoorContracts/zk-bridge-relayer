@@ -1,3 +1,6 @@
+import { Chain } from "wagmi";
+import { bscTest, fuji } from "./status-provider";
+
 export const TREE_HEIGHT = 20;
 
 export const ZERO_VALUE =
@@ -13,11 +16,11 @@ export const ZKEY_PATH = "zk-proof/circuit_final.zkey";
 
 export const BRIDGE = {
     43113: {
-        97: "0xb3C1eEE123A4311Bfe93244f445585A361d48B1D",
+        97: "0x04F3d1440da04af445FcE4b06394f00Bd413A9c3",
     },
 
     97: {
-        43113: "0xD7cD872524F023FB3Ada17fB7cB30eFb5bf8a397",
+        43113: "0xa6F1D9ba4BbacDc72ce6b294423661de8bBb375C",
     },
 } as { [key: number]: { [key: number]: string } };
 
@@ -31,3 +34,10 @@ export const CONNECT_STRING = "mongodb://127.0.0.1/bridge";
 export const ERC721_INTERFACE_ID = "0x80ac58cd";
 
 export const ERC20_INTERFACE_ID = "0x36372b07";
+
+export const PROVIDER = {
+    43113: fuji,
+    97: bscTest,
+} as { [key: number]: Chain };
+
+export const RELAYER = "0xe3842aa0fd5128667516bddb9028e25c38e8469d";

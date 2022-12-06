@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "dotenv -e .env next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -26,9 +26,12 @@
     "@rainbow-me/rainbowkit": "latest",
     "@typechain/ethers-v5": "^10.1.1",
     "@zk-kit/incremental-merkle-tree": "^1.0.0",
+    "ascii85": "^1.0.2",
     "axios": "^1.2.0",
     "circomlib": "^2.0.5",
     "circomlibjs": "^0.1.7",
+    "dotenv": "^16.0.3",
+    "dotenv-cli": "^6.0.0",
     "eth-sig-util": "^3.0.1",
     "ethers": "^5.7.2",
     "mongodb": "^4.12.1",
