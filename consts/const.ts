@@ -6,13 +6,13 @@ export const TREE_HEIGHT = 20;
 export const ZERO_VALUE =
     "21663839004416932945382355908790599225266501822907911457504978515578255421292";
 
-export const EVENT_QUERY_BATCH_SIZE = 5000;
+export const EVENT_QUERY_BATCH_SIZE = 2048;
 
-export const CONFIRMATION_BLOCKS = 15;
+export const CONFIRMATION_BLOCKS = 2;
 
-export const WASM_PATH = "zk-proof/withdraw.wasm";
+export const WASM_PATH = "/zk-proof/withdraw.wasm";
 
-export const ZKEY_PATH = "zk-proof/circuit_final.zkey";
+export const ZKEY_PATH = "/zk-proof/circuit_final.zkey";
 
 export const BRIDGE = {
     43113: {
@@ -23,6 +23,11 @@ export const BRIDGE = {
         43113: "0xa6F1D9ba4BbacDc72ce6b294423661de8bBb375C",
     },
 } as { [key: number]: { [key: number]: string } };
+
+export const DEPLOYED_BLOCK_NUM = {
+    "0x04F3d1440da04af445FcE4b06394f00Bd413A9c3": 16334380,
+    "0xa6F1D9ba4BbacDc72ce6b294423661de8bBb375C": 25211649,
+} as { [key: string]: number };
 
 export const COMMAND_GATE = {
     43113: "0x94baFDF976129CC2A510b00ee1E43fbE98299231",

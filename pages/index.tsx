@@ -30,13 +30,14 @@ import { InjectedConnector } from "wagmi/connectors/injected";
 import { Signer } from "ethers";
 import { parseEther } from "ethers/lib/utils.js";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
-import { switchNetwork } from "@wagmi/core";
+import { switchNetwork, fetchSigner, getProvider } from "@wagmi/core";
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import deposit from "../services/deposit";
 import { storeBridgeInfo, getBridgeInfos } from "../services/store-bridge-info";
 import { CONFIRMATION_BLOCKS, RELAYER } from "../consts/const";
 import { relayState } from "../services/relay-state";
 import { DepositedEvent } from "../typechain-types/contracts/ZKBridge";
+import { withdraw } from "../services/withdraw";
 
 const { chains, provider } = configureChains(
     [fuji, bscTest],
@@ -76,38 +77,36 @@ export const NetworkSelector: FC<NetworkSelectorProps> = ({
     const { connect } = useConnect();
 
     return (
-        <div>
-            <Dropdown
-                placeholder={name}
-                fluid
-                selection
-                options={(excludeConnected && chain
-                    ? chains.filter((_chain) => _chain.id != chain.id)
-                    : chains
-                ).map((c) => {
-                    return {
-                        key: c.id,
-                        value: c.id,
-                        text: c.name,
-                    };
-                })}
-                onChange={async (_, v) => {
-                    setChainId(v.value as number);
-                    if (excludeConnected) return;
+        <Dropdown
+            placeholder={name}
+            fluid
+            selection
+            options={(excludeConnected && chain
+                ? chains.filter((_chain) => _chain.id != chain.id)
+                : chains
+            ).map((c) => {
+                return {
+                    key: c.id,
+                    value: c.id,
+                    text: c.name,
+                };
+            })}
+            onChange={async (_, v) => {
+                setChainId(v.value as number);
+                if (excludeConnected) return;
 
-                    if (isConnected)
-                        await switchNetwork({
-                            chainId: v.value as number,
-                        });
-                    else {
-                        connect({
-                            connector: new InjectedConnector(),
-                            chainId: v.value as number,
-                        });
-                    }
-                }}
-            ></Dropdown>
-        </div>
+                if (isConnected)
+                    await switchNetwork({
+                        chainId: v.value as number,
+                    });
+                else {
+                    connect({
+                        connector: new InjectedConnector(),
+                        chainId: v.value as number,
+                    });
+                }
+            }}
+        ></Dropdown>
     );
 };
 
@@ -217,7 +216,15 @@ export const BridgeModal = () => {
     };
 
     const handleWithdraw = async () => {
-        await switchNetwork({ chainId: chainIdTo });
+        const signer = await fetchSigner();
+        await withdraw(
+            signer as Signer,
+            "0x3F579e98e794B870aF2E53115DC8F9C4B2A1bDA6",
+            chainIdTo,
+            chainIdFrom,
+            nullifier,
+            setStatus
+        );
     };
 
     return (
@@ -227,14 +234,12 @@ export const BridgeModal = () => {
                 <p>{status}</p>
             </Message>
 
-            <Form.Field>
-                <Label>From</Label>
-                <NetworkSelector
-                    name="From Network"
-                    setChainId={setChainIdFrom}
-                    excludeConnected={false}
-                ></NetworkSelector>
-            </Form.Field>
+            <Label>From</Label>
+            <NetworkSelector
+                name="From Network"
+                setChainId={setChainIdFrom}
+                excludeConnected={false}
+            ></NetworkSelector>
 
             <Form.Input
                 label="Asset Address"
@@ -248,17 +253,15 @@ export const BridgeModal = () => {
                 <ValueInput setValue={setValue}></ValueInput>
             </Form.Field>
 
-            <Form.Field>
-                <Label>To</Label>
-                <NetworkSelector
-                    name="To Network"
-                    excludeConnected
-                    setChainId={setChainIdTo}
-                ></NetworkSelector>
-            </Form.Field>
+            <Label>To</Label>
+            <NetworkSelector
+                name="To Network"
+                excludeConnected
+                setChainId={setChainIdTo}
+            ></NetworkSelector>
 
             <Form.Field>
-                <Form.Button as={"div"} labelPosition="right">
+                <Form.Button labelPosition="right">
                     <Button
                         disabled={bridgeDisabled}
                         loading={bridgeLoading}
@@ -280,6 +283,7 @@ export const BridgeModal = () => {
                 placeholder="Withdraw code"
                 disabled={withdrawDisabled}
                 defaultValue={nullifier}
+                onChange={(_, d) => setNullifier(d.value)}
             />
 
             <Form.Field>

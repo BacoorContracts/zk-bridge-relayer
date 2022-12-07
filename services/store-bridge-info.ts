@@ -57,6 +57,5 @@ export const getBridgeInfos = async () => {
     method: "get",
     url: "https://nft-card.w3w.app/api/bridge",
   });
-  console.log(bridgeInfoList);
   return bridgeInfoList;
 };
