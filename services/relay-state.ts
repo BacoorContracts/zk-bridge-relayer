@@ -1,4 +1,3 @@
-
 import { BRIDGE } from "../consts/const";
 import { getProvider } from "@wagmi/core";
 import { Dispatch, SetStateAction } from "react";
@@ -11,7 +10,9 @@ export const relayState = async (
     state: BigNumberish,
     setStatus: Dispatch<SetStateAction<string>>
 ) => {
+    console.log({ chainIdTo, chainIdFrom });
     const provider = getProvider({ chainId: chainIdTo });
+    console.log({ provider });
     const signer: Signer = new Wallet(
         process.env.NEXT_PUBLIC_RELAYER as BytesLike,
         provider
@@ -23,6 +24,8 @@ export const relayState = async (
         signer
     ) as ZKBridge;
 
+    console.log({ bridgeTo });
+
     setStatus("Relaying State to Target Network");
 
     await bridgeTo
@@ -30,9 +33,9 @@ export const relayState = async (
         .addBridgeState(state)
         .then(async (tx) => await tx.wait())
         .catch((err) => {
-            setStatus("Ran out of gas fee token")
+            setStatus("Ran out of gas fee token");
             throw err;
         });
 
-    setStatus("Relayed State to Target Network")
+    setStatus("Relayed State to Target Network. Ready to withdraw");
 };

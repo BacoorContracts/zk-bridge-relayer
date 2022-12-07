@@ -11,8 +11,6 @@ import {
 //  @ts-ignore
 //import plonk from "snarkjs";
 const { plonk } = require("snarkjs");
-import { Proof } from "../types/proof";
-import { BridgeInfo } from "../models/bridge-info";
 import { Witness } from "../types/witness";
 import {
     ZKBridge,
@@ -20,12 +18,7 @@ import {
     ZKBridge__factory,
     CommandGate__factory,
 } from "../typechain-types";
-import {
-    defaultAbiCoder,
-    hexZeroPad,
-    Interface,
-    parseEther,
-} from "ethers/lib/utils";
+import { defaultAbiCoder, Interface, parseEther } from "ethers/lib/utils";
 import {
     BigNumber,
     BigNumberish,
@@ -37,44 +30,21 @@ import {
 import { createCommitment, createNullifierHash } from "../utils/create-deposit";
 import { PoseidonBinaryMerkleTree } from "../utils/poseidon-binary-merkle-tree";
 import { DepositedEvent } from "../typechain-types/contracts/interfaces/IZKBridge";
-import {
-    switchNetwork,
-    fetchSigner,
-    getAccount,
-    connect,
-    InjectedConnector,
-} from "@wagmi/core";
+import { switchNetwork, fetchSigner, getNetwork } from "@wagmi/core";
 import { Dispatch, SetStateAction } from "react";
 import path from "path";
-
-// const bridgeInfoOf = async (
-//     commitment: string
-// ): Promise<[string, string, string, string]> => {
-//     const record = (await BridgeInfo.findOne(
-//         { commitment: commitment },
-//         { token: 1, value: 1 }
-//     )) as { [key: string]: string };
-//     return [record.token, record.value, record.fee, record.relayer];
-// };
 
 const prove = async (witness: Witness): Promise<[BigNumberish, string[]]> => {
     const wasmPath = path.join(process.cwd(), WASM_PATH);
     const zkeyPath = path.join(process.cwd(), ZKEY_PATH);
-    console.log({ wasmPath, zkeyPath });
     const { proof, publicSignals } = await plonk.fullProve(
         witness,
         wasmPath,
         zkeyPath
     );
 
-    console.log({ proof, publicSignals });
-    // const res =  await plonk.exportSolidityCallData(proof, publicSignals);
-    // console.log({res})
-    //return data as Proof
     const callData = await plonk.exportSolidityCallData(proof, publicSignals);
-    console.log({ callData });
     const [_proof] = callData.split(",", 1);
-    console.log({ _proof });
     return [_proof, publicSignals];
 };
 
@@ -110,8 +80,6 @@ const queryDepositEvents = async (
         )
     );
 
-    //events = events.filter((value, index) => events.indexOf(value) == index);
-
     return events;
 };
 
@@ -123,8 +91,6 @@ export const withdraw = async (
     nullifier: BigNumberish,
     setStatus: Dispatch<SetStateAction<string>>
 ): Promise<string> => {
-    // const chaindIdTo: number = await signer.getChainId();
-
     const bridgeFrom: ZKBridge = new Contract(
         BRIDGE[chainIdFrom][chainIdTo],
         ZKBridge__factory.abi,
@@ -156,8 +122,6 @@ export const withdraw = async (
         parseEther("0.001"),
         "0x3F579e98e794B870aF2E53115DC8F9C4B2A1bDA6",
     ];
-
-    // if (!!!value) throw new Error("COMMITMENT_NOT_FOUND");
 
     leaves.forEach((leaf) => tree.insert(leaf));
 
@@ -197,44 +161,21 @@ export const withdraw = async (
     inputs.splice(feeIdx, 1);
     let _inputs = inputs.map((v) => BigNumber.from(v).toHexString());
 
-    console.log({ proof, _inputs });
-    await switchNetwork({ chainId: chainIdTo });
+    const network = await switchNetwork({ chainId: chainIdTo });
 
-    const _signer = (await fetchSigner({ chainId: chainIdTo })) as Signer;
-
-    console.log({ _signer });
+    const _signer = await fetchSigner({ chainId: chainIdTo });
 
     const commandGate: CommandGate = new Contract(
         COMMAND_GATE[chainIdTo],
         CommandGate__factory.abi,
-        _signer
+        _signer as Signer
     ) as CommandGate;
 
+    setStatus("Withdrawing ...");
     const IZKBridge = new Interface(ZKBridge__factory.abi);
     let receipt!: ContractReceipt;
-    let params = [
-        BRIDGE[chainIdTo][chainIdFrom],
-        IZKBridge.getSighash("withdraw"),
-        defaultAbiCoder.encode(
-            [
-                "address",
-                "address",
-                "uint256",
-                "tuple(uint256,uint256,address,uint256,address,address)",
-                "bytes",
-            ],
-            [
-                ethers.constants.AddressZero,
-                ethers.constants.AddressZero,
-                ethers.constants.Zero,
-                _inputs,
-                proof,
-            ]
-        ),
-    ];
-    console.log(params);
     await commandGate
-        .connect(_signer)
+        .connect(_signer as Signer)
         .depositNativeTokenWithCommand(
             BRIDGE[chainIdTo][chainIdFrom],
             IZKBridge.getSighash("withdraw"),
@@ -258,8 +199,15 @@ export const withdraw = async (
         )
         .then(async (tx) => (receipt = await tx.wait()))
         .catch((err) => {
-            console.log(err);
-        });
+            setStatus("Withdraw failed");
+            throw err;
+        })
+        .finally(() =>
+            setStatus(
+                `Withdrawal successful. \nTransaction hash: ${network.blockExplorers?.default.url}/tx/${receipt.transactionHash}`
+            )
+        );
 
+    console.log({ receipt });
     return receipt.transactionHash;
 };
