@@ -15,6 +15,23 @@ a {
   box-sizing: border-box;
 }
 
+/* tuantu */
+table,
+th,
+td {
+  border: 1px solid;
+}
+
+.disconnectBtn {
+  padding: 11px 12px;
+  border-radius: 12px;
+  background-color: #2f76fd;
+  border: none;
+  font: 16px bold;
+  cursor: pointer;
+  margin-left: 20px;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

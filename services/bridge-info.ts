@@ -1,7 +1,7 @@
 import { BigNumber, BigNumberish } from "ethers";
 import axios from "axios";
 
-export const storeBridgeInfo = async (
+const storeBridgeInfo = async (
   commitment: string,
   token: string,
   fee: BigNumberish,
@@ -52,10 +52,11 @@ export const storeBridgeInfo = async (
   // return data;
 };
 
-export const getBridgeInfos = async () => {
+const getListBridgeInfo = async () => {
   const { data: bridgeInfoList } = await axios({
     method: "get",
     url: "https://nft-card.w3w.app/api/bridge",
   });
   return bridgeInfoList;
 };
+export { storeBridgeInfo, getListBridgeInfo };
