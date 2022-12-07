@@ -185,7 +185,6 @@ export const BridgeModal = () => {
       bridge,
     });
 
-    return;
     const { blockNumber: submittedBlock } = await tx.wait();
     const targetBlock = submittedBlock + CONFIRMATION_BLOCKS;
 

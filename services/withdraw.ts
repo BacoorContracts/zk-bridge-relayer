@@ -20,18 +20,30 @@ import {
     ZKBridge__factory,
     CommandGate__factory,
 } from "../typechain-types";
-import { defaultAbiCoder, Interface, parseEther } from "ethers/lib/utils";
+import {
+    defaultAbiCoder,
+    hexZeroPad,
+    Interface,
+    parseEther,
+} from "ethers/lib/utils";
 import {
     BigNumber,
     BigNumberish,
     Contract,
     ContractReceipt,
+    ethers,
     Signer,
 } from "ethers";
 import { createCommitment, createNullifierHash } from "../utils/create-deposit";
 import { PoseidonBinaryMerkleTree } from "../utils/poseidon-binary-merkle-tree";
 import { DepositedEvent } from "../typechain-types/contracts/interfaces/IZKBridge";
-import { switchNetwork, fetchSigner } from "@wagmi/core";
+import {
+    switchNetwork,
+    fetchSigner,
+    getAccount,
+    connect,
+    InjectedConnector,
+} from "@wagmi/core";
 import { Dispatch, SetStateAction } from "react";
 import path from "path";
 
@@ -59,7 +71,11 @@ const prove = async (witness: Witness): Promise<[BigNumberish, string[]]> => {
     // const res =  await plonk.exportSolidityCallData(proof, publicSignals);
     // console.log({res})
     //return data as Proof
-    return await plonk.exportSolidityCallData(proof, publicSignals);
+    const callData = await plonk.exportSolidityCallData(proof, publicSignals);
+    console.log({ callData });
+    const [_proof] = callData.split(",", 1);
+    console.log({ _proof });
+    return [_proof, publicSignals];
 };
 
 const queryDepositEvents = async (
@@ -177,10 +193,16 @@ export const withdraw = async (
     setStatus("Constructing ZK Proof ...");
 
     const [proof, inputs] = await prove(witness);
-    console.log({ proof, inputs });
-    switchNetwork({ chainId: chainIdTo });
+    const feeIdx = inputs.indexOf(witness.fee);
+    inputs.splice(feeIdx, 1);
+    let _inputs = inputs.map((v) => BigNumber.from(v).toHexString());
 
-    const _signer = (await fetchSigner()) as Signer;
+    console.log({ proof, _inputs });
+    await switchNetwork({ chainId: chainIdTo });
+
+    const _signer = (await fetchSigner({ chainId: chainIdTo })) as Signer;
+
+    console.log({ _signer });
 
     const commandGate: CommandGate = new Contract(
         COMMAND_GATE[chainIdTo],
@@ -190,25 +212,45 @@ export const withdraw = async (
 
     const IZKBridge = new Interface(ZKBridge__factory.abi);
     let receipt!: ContractReceipt;
+    let params = [
+        BRIDGE[chainIdTo][chainIdFrom],
+        IZKBridge.getSighash("withdraw"),
+        defaultAbiCoder.encode(
+            [
+                "address",
+                "address",
+                "uint256",
+                "tuple(uint256,uint256,address,uint256,address,address)",
+                "bytes",
+            ],
+            [
+                ethers.constants.AddressZero,
+                ethers.constants.AddressZero,
+                ethers.constants.Zero,
+                _inputs,
+                proof,
+            ]
+        ),
+    ];
+    console.log(params);
     await commandGate
         .connect(_signer)
         .depositNativeTokenWithCommand(
             BRIDGE[chainIdTo][chainIdFrom],
             IZKBridge.getSighash("withdraw"),
             defaultAbiCoder.encode(
-                ["bytes", "bytes"],
                 [
-                    defaultAbiCoder.encode(
-                        [
-                            "uint256",
-                            "uint256",
-                            "uint256",
-                            "address",
-                            "address",
-                            "address",
-                        ],
-                        inputs
-                    ),
+                    "address",
+                    "address",
+                    "uint256",
+                    "tuple(uint256,uint256,address,uint256,address,address)",
+                    "bytes",
+                ],
+                [
+                    ethers.constants.AddressZero,
+                    ethers.constants.AddressZero,
+                    ethers.constants.Zero,
+                    _inputs,
                     proof,
                 ]
             ),
@@ -216,7 +258,7 @@ export const withdraw = async (
         )
         .then(async (tx) => (receipt = await tx.wait()))
         .catch((err) => {
-            throw err;
+            console.log(err);
         });
 
     return receipt.transactionHash;

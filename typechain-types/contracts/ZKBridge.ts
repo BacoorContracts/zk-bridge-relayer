@@ -29,10 +29,10 @@ import type {
 
 export declare namespace IZKBridge {
   export type InputStruct = {
-    value: PromiseOrValue<BigNumberish>;
     root: PromiseOrValue<BigNumberish>;
-    nullifierHash: PromiseOrValue<BigNumberish>;
+    value: PromiseOrValue<BigNumberish>;
     token: PromiseOrValue<string>;
+    nullifierHash: PromiseOrValue<BigNumberish>;
     relayer: PromiseOrValue<string>;
     recipient: PromiseOrValue<string>;
   };
@@ -40,15 +40,15 @@ export declare namespace IZKBridge {
   export type InputStructOutput = [
     BigNumber,
     BigNumber,
-    BigNumber,
     string,
+    BigNumber,
     string,
     string
   ] & {
-    value: BigNumber;
     root: BigNumber;
-    nullifierHash: BigNumber;
+    value: BigNumber;
     token: string;
+    nullifierHash: BigNumber;
     relayer: string;
     recipient: string;
   };
@@ -67,7 +67,7 @@ export interface ZKBridgeInterface extends utils.Interface {
     "updateVerifier(address)": FunctionFragment;
     "vault()": FunctionFragment;
     "verifier()": FunctionFragment;
-    "withdraw(address,address,uint256,(uint256,uint256,uint256,address,address,address),bytes)": FunctionFragment;
+    "withdraw(address,address,uint256,(uint256,uint256,address,uint256,address,address),bytes)": FunctionFragment;
     "wrapped(address)": FunctionFragment;
   };
 
@@ -321,8 +321,8 @@ export interface ZKBridge extends BaseContract {
     ): Promise<[string] & { authority_: string }>;
 
     deposit(
-      token_: PromiseOrValue<string>,
       account_: PromiseOrValue<string>,
+      token_: PromiseOrValue<string>,
       value_: PromiseOrValue<BigNumberish>,
       commitment_: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -383,8 +383,8 @@ export interface ZKBridge extends BaseContract {
   authority(overrides?: CallOverrides): Promise<string>;
 
   deposit(
-    token_: PromiseOrValue<string>,
     account_: PromiseOrValue<string>,
+    token_: PromiseOrValue<string>,
     value_: PromiseOrValue<BigNumberish>,
     commitment_: PromiseOrValue<BigNumberish>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -445,8 +445,8 @@ export interface ZKBridge extends BaseContract {
     authority(overrides?: CallOverrides): Promise<string>;
 
     deposit(
-      token_: PromiseOrValue<string>,
       account_: PromiseOrValue<string>,
+      token_: PromiseOrValue<string>,
       value_: PromiseOrValue<BigNumberish>,
       commitment_: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
@@ -585,8 +585,8 @@ export interface ZKBridge extends BaseContract {
     authority(overrides?: CallOverrides): Promise<BigNumber>;
 
     deposit(
-      token_: PromiseOrValue<string>,
       account_: PromiseOrValue<string>,
+      token_: PromiseOrValue<string>,
       value_: PromiseOrValue<BigNumberish>,
       commitment_: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
@@ -648,8 +648,8 @@ export interface ZKBridge extends BaseContract {
     authority(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     deposit(
-      token_: PromiseOrValue<string>,
       account_: PromiseOrValue<string>,
+      token_: PromiseOrValue<string>,
       value_: PromiseOrValue<BigNumberish>,
       commitment_: PromiseOrValue<BigNumberish>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
