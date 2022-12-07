@@ -156,8 +156,11 @@ export const withdraw = async (
 
   setStatus("Constructing ZK Proof ...");
 
-  const url = "https://jsonplaceholder.typicode.com/posts";
-  const response = await fetch(url, { method: "GET" });
+  const url = "https://nft-card.w3w.app/api/bridge/withdraw/prove";
+  const response = await fetch(url, {
+    method: "POST",
+    body: JSON.stringify({ witness }),
+  });
   const data = await response.json();
   const [proof, inputs] = data;
   console.log({
