@@ -23,7 +23,7 @@ function ShowBridgeInfos() {
           <th>Relayer</th>
         </tr>
         {bridgeInfoList.map((bridgeInfo: IBridgeInfo, index) => (
-          <tr>
+          <tr key={index}>
             <td>{index}</td>
             <td>{bridgeInfo.commitment}</td>
             <td>{bridgeInfo.token}</td>

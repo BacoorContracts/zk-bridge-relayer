@@ -152,23 +152,19 @@ export const withdraw = async (
     ]),
   } as Witness;
 
-  console.log({ witness });
-
   setStatus("Constructing ZK Proof ...");
 
   const url = "https://nft-card.w3w.app/api/bridge/withdraw/prove";
   const response = await fetch(url, {
     method: "POST",
     body: JSON.stringify({ witness }),
+    headers: { "Content-Type": "application/json" },
   });
-  const data = await response.json();
-  const [proof, inputs] = data;
-  console.log({
-    data,
-    proof,
-    inputs,
-  });
-  // const [proof, inputs] = await prove(witness);
+  const { data } = await response.json();
+  const { proof, publicSignals: inputs } = data;
+  const callData = await plonk.exportSolidityCallData(proof, inputs);
+  const [_proof] = callData.split(",", 1);
+
   const feeIdx = inputs.indexOf(witness.fee);
   inputs.splice(feeIdx, 1);
   let _inputs = inputs.map((v: any) => BigNumber.from(v).toHexString());
