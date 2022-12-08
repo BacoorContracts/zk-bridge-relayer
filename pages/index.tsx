@@ -55,22 +55,22 @@ export const BridgeModal = () => {
         const { blockNumber: submittedBlock } = await tx.wait();
         const targetBlock = submittedBlock + CONFIRMATION_BLOCKS;
 
-        let currentBlock: number;
-        while (
-            (currentBlock = (await (
-                signer as Signer
-            ).provider?.getBlockNumber()) as number) <= targetBlock
-        ) {
-            setStatus(
-                `Confirmation blocks: ${
-                    currentBlock - submittedBlock
-                }/${CONFIRMATION_BLOCKS}`
-            );
-            await delay(1000);
-        }
-        setStatus(
-            `Confirmation blocks: ${CONFIRMATION_BLOCKS}/${CONFIRMATION_BLOCKS}`
-        );
+    let currentBlock: number;
+    while (
+      (currentBlock = (await (
+        signer as Signer
+      ).provider?.getBlockNumber()) as number) <= targetBlock
+    ) {
+      setStatus(
+        `Confirmation blocks: ${
+          currentBlock - submittedBlock
+        }/${CONFIRMATION_BLOCKS}`
+      );
+      await delay(1000);
+    }
+    setStatus(
+      `Confirmation blocks: ${CONFIRMATION_BLOCKS}/${CONFIRMATION_BLOCKS}`
+    );
 
         const events: DepositedEvent[] = await bridge.queryFilter(
             bridge.filters.Deposited(asset, address, value),
@@ -85,15 +85,15 @@ export const BridgeModal = () => {
             setStatus
         );
 
-        setNullifier(nullifier);
-        setBridgeLoading(false);
-        setBridgeDisabled(true);
-        setWithdrawDisabled(false);
-    };
+    setNullifier(nullifier);
+    setBridgeLoading(false);
+    setBridgeDisabled(true);
+    setWithdrawDisabled(false);
+  };
 
-    const handleWithdraw = async () => {
-        const signer = await fetchSigner();
-        setWitdrawLoading(true);
+  const handleWithdraw = async () => {
+    const signer = await fetchSigner();
+    setWitdrawLoading(true);
 
         await withdraw(
             signer as Signer,
@@ -105,10 +105,10 @@ export const BridgeModal = () => {
             setLinkStatus
         );
 
-        setWitdrawLoading(false);
-        setBridgeDisabled(false);
-        setWithdrawDisabled(true);
-    };
+    setWitdrawLoading(false);
+    setBridgeDisabled(false);
+    setWithdrawDisabled(true);
+  };
 
     return (
         <Form
