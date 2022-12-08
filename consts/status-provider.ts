@@ -32,7 +32,7 @@ export const bscTest: Chain = {
         symbol: "tBNB",
     },
     rpcUrls: {
-        default: "https://bsctestapi.terminet.io/rpc",
+        default: "https://data-seed-prebsc-1-s1.binance.org:8545/",
     },
     blockExplorers: {
         default: {
@@ -46,7 +46,7 @@ export const bscTest: Chain = {
 export const providerRPC = {
     bscTest: {
         name: "bscTest",
-        rpc: "https://bsctestapi.terminet.io/rpc",
+        rpc: "https://data-seed-prebsc-1-s1.binance.org:8545/",
         chainId: 97,
     },
     fuji: {

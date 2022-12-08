@@ -10,9 +10,7 @@ export const relayState = async (
     state: BigNumberish,
     setStatus: Dispatch<SetStateAction<string>>
 ) => {
-    console.log({ chainIdTo, chainIdFrom });
     const provider = getProvider({ chainId: chainIdTo });
-    console.log({ provider });
     const signer: Signer = new Wallet(
         process.env.NEXT_PUBLIC_RELAYER as BytesLike,
         provider
@@ -24,7 +22,6 @@ export const relayState = async (
         signer
     ) as ZKBridge;
 
-    console.log({ bridgeTo });
 
     setStatus("Relaying State to Target Network");
 
