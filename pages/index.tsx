@@ -118,7 +118,7 @@ export const BridgeModal = () => {
                 <div>
                     <h1>Status</h1>
                     <p>{status}</p>
-                    {linkStatus !== "" && <a target="_blank" href={linkStatus}>Transaction Hash</a>}
+                    {linkStatus !== "" && <a rel="noopener noreferrer" target="_blank" href={linkStatus}>Transaction Hash</a>}
                 </div>
 
                 <Divider></Divider>
