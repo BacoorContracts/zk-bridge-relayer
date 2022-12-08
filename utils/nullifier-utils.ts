@@ -26,7 +26,7 @@ const computeSharedWallet = (
 ): SigningKey => {
     return new SigningKey(
         new SigningKey(
-            process.env.NEXT_PUBLIC_RELAYER as BytesLike
+            process.env.RELAYER as BytesLike
         ).computeSharedSecret(getPublicKey(message, signature))
     );
 };

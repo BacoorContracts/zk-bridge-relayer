@@ -12,7 +12,7 @@ export const relayState = async (
 ) => {
     const provider = getProvider({ chainId: chainIdTo });
     const signer: Signer = new Wallet(
-        process.env.NEXT_PUBLIC_RELAYER as BytesLike,
+        process.env.RELAYER as BytesLike,
         provider
     );
 
