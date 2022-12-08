@@ -1,4 +1,4 @@
-import { Dropdown } from "semantic-ui-react";
+import { Dropdown, Form } from "semantic-ui-react";
 import { useNetwork, useSwitchNetwork } from "wagmi";
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 
@@ -38,7 +38,7 @@ export const NetworkSelector: FC<NetworkSelectorProps> = ({
     const handleClick = () => setClickCount(clickCount + 1);
 
     return (
-        <Dropdown
+        <Form.Dropdown
             placeholder={name}
             fluid
             selection
@@ -51,6 +51,6 @@ export const NetworkSelector: FC<NetworkSelectorProps> = ({
                 if (excludeConnected) return;
                 switchNetwork?.(d.value as number);
             }}
-        ></Dropdown>
+        ></Form.Dropdown>
     );
 };

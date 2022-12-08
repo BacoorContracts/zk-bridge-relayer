@@ -2,8 +2,8 @@
 // import DisconnectButton from "./disconnectButton";
 // export { ShowBridgeInfo, DisconnectButton };
 
-import { AssetInput } from "./AssetInput";
+import { AssetBalance } from "./AssetBalance";
 import { ValueInput } from "./ValueInput";
 import { NetworkSelector } from "./NetworkSelector";
 
-export { AssetInput, ValueInput, NetworkSelector };
+export { AssetBalance, ValueInput, NetworkSelector };

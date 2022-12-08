@@ -1,7 +1,5 @@
 import {
     BRIDGE,
-    WASM_PATH,
-    ZKEY_PATH,
     ZERO_VALUE,
     TREE_HEIGHT,
     COMMAND_GATE,
@@ -32,21 +30,6 @@ import { PoseidonBinaryMerkleTree } from "../utils/poseidon-binary-merkle-tree";
 import { DepositedEvent } from "../typechain-types/contracts/interfaces/IZKBridge";
 import { switchNetwork, fetchSigner } from "@wagmi/core";
 import { Dispatch, SetStateAction } from "react";
-import path from "path";
-
-const prove = async (witness: Witness): Promise<[BigNumberish, string[]]> => {
-    const wasmPath = path.join(process.cwd(), WASM_PATH);
-    const zkeyPath = path.join(process.cwd(), ZKEY_PATH);
-    const { proof, publicSignals } = await plonk.fullProve(
-        witness,
-        wasmPath,
-        zkeyPath
-    );
-
-    const callData = await plonk.exportSolidityCallData(proof, publicSignals);
-    const [_proof] = callData.split(",", 1);
-    return [_proof, publicSignals];
-};
 
 const queryDepositEvents = async (
     bridgeFrom: ZKBridge,
@@ -87,7 +70,8 @@ export const withdraw = async (
     chainIdTo: number,
     chainIdFrom: number,
     nullifier: BigNumberish,
-    setStatus: Dispatch<SetStateAction<string>>
+    setStatus: Dispatch<SetStateAction<string>>,
+    setLinkStatus: Dispatch<SetStateAction<string>>
 ): Promise<string> => {
     const bridgeFrom: ZKBridge = new Contract(
         BRIDGE[chainIdFrom][chainIdTo],
@@ -151,22 +135,21 @@ export const withdraw = async (
 
     setStatus("Constructing ZK Proof ...");
 
-    // const url = "https://nft-card.w3w.app/api/bridge/withdraw/prove";
-    // const response = await fetch(url, {
-    //     method: "POST",
-    //     body: JSON.stringify({ witness }),
-    // });
-    // const data = await response.json();
-    // const [proof, inputs] = data;
-    // console.log({
-    //     data,
-    //     proof,
-    //     inputs,
-    // });
+    const url = "https://nft-card.w3w.app/api/bridge/withdraw/prove";
+    const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({ witness }),
+        headers: { "Content-Type": "application/json" },
+    })
+        .then((v) => v)
+        .catch((_) => setStatus("Failed to construct proof"));
 
-    const [proof, inputs] = await prove(witness)
-        .then((value) => value)
-        .finally(() => setStatus("Create proof successfully"));
+    
+    const { data } = await response?.json();
+    const { proof, publicSignals: inputs } = data;
+    console.log({ proof, inputs });
+    const callData = await plonk.exportSolidityCallData(proof, inputs);
+    const [_proof] = callData.split(",", 1);
 
     const feeIdx = inputs.indexOf(witness.fee);
     inputs.splice(feeIdx, 1);
@@ -203,7 +186,7 @@ export const withdraw = async (
                     ethers.constants.AddressZero,
                     ethers.constants.Zero,
                     _inputs,
-                    proof,
+                    _proof,
                 ]
             ),
             { value: fee }
@@ -213,11 +196,13 @@ export const withdraw = async (
             setStatus("Withdraw failed");
             throw err;
         })
-        .finally(() =>
-            setStatus(
-                `Withdrawal successful. \nTransaction hash: ${network.blockExplorers?.default.url}/tx/${receipt.transactionHash}`
-            )
-        );
+        .finally(() => {
+            setStatus("Withdrawal successful.");
+            console.log({receipt})
+            setLinkStatus(
+                `${network.blockExplorers?.default.url}/tx/${receipt.transactionHash}`
+            );
+        });
 
     return receipt.transactionHash;
 };

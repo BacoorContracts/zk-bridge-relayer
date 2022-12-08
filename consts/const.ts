@@ -14,6 +14,11 @@ export const WASM_PATH = "/zk-proof/withdraw.wasm";
 
 export const ZKEY_PATH = "/zk-proof/circuit_final.zkey";
 
+export const ASSETS = {
+    43113: ["0xBf3A47229E2F8c22ca9F6b6Fe93b48Db5f7b8510"],
+    97: ["0xA15DfD8e02190549F7f232C68EADFb4BbEdad3F7"],
+} as { [key: number]: string[] };
+
 export const BRIDGE = {
     43113: {
         97: "0x7af7F6758EE5f2a2136893D8e7ad468b00F95254",

@@ -14,7 +14,6 @@ import {
 
 const ascii85 = require("ascii85");
 
-import { BigNumberish } from "ethers";
 import { BytesLike, SignatureLike } from "@ethersproject/bytes";
 
 const getPublicKey = (message: string, signature: SignatureLike): string => {
@@ -34,7 +33,7 @@ const computeSharedWallet = (
 
 export const encryptNullifier = (
     message: string,
-    nullifier: BigNumberish,
+    nullifier: string,
     signature: SignatureLike
 ) => {
     return encryptSafely(

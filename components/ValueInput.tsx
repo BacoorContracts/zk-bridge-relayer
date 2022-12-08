@@ -11,8 +11,8 @@ export const ValueInput: FC<IValueInput> = ({ setValue }: IValueInput) => {
         <Input
             onChange={(_, data) => setValue(parseEther(data.value).toString())}
             labelPosition="right"
-            type="text"
-            placeholder="Amount"
+            type="number"
+            placeholder="Amount / Token Id"
         >
             <Label basic>$</Label>
             <input />

@@ -6,7 +6,7 @@ interface IAsset {
     token: `0x${string}`;
 }
 
-export const AssetInput: FC<IAsset> = ({ token }: IAsset) => {
+export const AssetBalance: FC<IAsset> = ({ token }: IAsset) => {
     const { address } = useAccount();
     const {
         data: _data,
