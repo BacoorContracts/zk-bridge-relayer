@@ -133,6 +133,8 @@ export const withdraw = async (
         ]),
     } as Witness;
 
+    console.log({ witness });
+
     setStatus("Constructing ZK Proof ...");
 
     const url = "https://nft-card.w3w.app/api/bridge/withdraw/prove";
@@ -144,7 +146,6 @@ export const withdraw = async (
         .then((v) => v)
         .catch((_) => setStatus("Failed to construct proof"));
 
-    
     const { data } = await response?.json();
     const { proof, publicSignals: inputs } = data;
     console.log({ proof, inputs });
@@ -198,7 +199,7 @@ export const withdraw = async (
         })
         .finally(() => {
             setStatus("Withdrawal successful.");
-            console.log({receipt})
+            console.log({ receipt });
             setLinkStatus(
                 `${network.blockExplorers?.default.url}/tx/${receipt.transactionHash}`
             );
