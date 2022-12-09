@@ -20,6 +20,7 @@ import { CONFIRMATION_BLOCKS } from "../consts/const";
 import { DepositedEvent } from "../typechain-types/contracts/ZKBridge";
 import { NetworkSelector, AssetBalance, ValueInput } from "../components/index";
 import { BlindStoreButton } from "../components/BlindStoreButton";
+import { AssetDropDown } from "../components/AssetDropdown";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
@@ -55,22 +56,22 @@ export const BridgeModal = () => {
         const { blockNumber: submittedBlock } = await tx.wait();
         const targetBlock = submittedBlock + CONFIRMATION_BLOCKS;
 
-    let currentBlock: number;
-    while (
-      (currentBlock = (await (
-        signer as Signer
-      ).provider?.getBlockNumber()) as number) <= targetBlock
-    ) {
-      setStatus(
-        `Confirmation blocks: ${
-          currentBlock - submittedBlock
-        }/${CONFIRMATION_BLOCKS}`
-      );
-      await delay(1000);
-    }
-    setStatus(
-      `Confirmation blocks: ${CONFIRMATION_BLOCKS}/${CONFIRMATION_BLOCKS}`
-    );
+        let currentBlock: number;
+        while (
+            (currentBlock = (await (
+                signer as Signer
+            ).provider?.getBlockNumber()) as number) <= targetBlock
+        ) {
+            setStatus(
+                `Confirmation blocks: ${
+                    currentBlock - submittedBlock
+                }/${CONFIRMATION_BLOCKS}`
+            );
+            await delay(1000);
+        }
+        setStatus(
+            `Confirmation blocks: ${CONFIRMATION_BLOCKS}/${CONFIRMATION_BLOCKS}`
+        );
 
         const events: DepositedEvent[] = await bridge.queryFilter(
             bridge.filters.Deposited(asset, address, value),
@@ -85,15 +86,15 @@ export const BridgeModal = () => {
             setStatus
         );
 
-    setNullifier(nullifier);
-    setBridgeLoading(false);
-    setBridgeDisabled(true);
-    setWithdrawDisabled(false);
-  };
+        setNullifier(nullifier);
+        setBridgeLoading(false);
+        setBridgeDisabled(true);
+        setWithdrawDisabled(false);
+    };
 
-  const handleWithdraw = async () => {
-    const signer = await fetchSigner();
-    setWitdrawLoading(true);
+    const handleWithdraw = async () => {
+        const signer = await fetchSigner();
+        setWitdrawLoading(true);
 
         await withdraw(
             signer as Signer,
@@ -105,10 +106,10 @@ export const BridgeModal = () => {
             setLinkStatus
         );
 
-    setWitdrawLoading(false);
-    setBridgeDisabled(false);
-    setWithdrawDisabled(true);
-  };
+        setWitdrawLoading(false);
+        setBridgeDisabled(false);
+        setWithdrawDisabled(true);
+    };
 
     return (
         <Form
@@ -118,7 +119,15 @@ export const BridgeModal = () => {
                 <div>
                     <h1>Status</h1>
                     <p>{status}</p>
-                    {linkStatus !== "" && <a rel="noopener noreferrer" target="_blank" href={linkStatus}>Transaction Hash</a>}
+                    {linkStatus !== "" && (
+                        <a
+                            rel="noopener noreferrer"
+                            target="_blank"
+                            href={linkStatus}
+                        >
+                            Transaction Hash
+                        </a>
+                    )}
                 </div>
 
                 <Divider></Divider>
@@ -145,14 +154,16 @@ export const BridgeModal = () => {
 
                 <Divider></Divider>
 
-                <Form.Input
+                {/* <Form.Input
                     required
                     value={asset}
                     label="Asset Address"
                     onChange={(_, data) => {
                         setAsset(data.value);
                     }}
-                ></Form.Input>
+                ></Form.Input> */}
+
+                <AssetDropDown setAsset={setAsset}></AssetDropDown>
 
                 <Form.Field required>
                     <AssetBalance token={asset as `0x${string}`}></AssetBalance>
@@ -162,7 +173,6 @@ export const BridgeModal = () => {
                 <Divider></Divider>
 
                 <Form.Input
-                
                     label="Recipient Address"
                     defaultValue={address}
                     onChange={(_, d) => setRecipient(d.value as `0x${string}`)}
@@ -184,18 +194,27 @@ export const BridgeModal = () => {
 
                 <Form.Field widths="equal">
                     <Label>Nullifier</Label>
-                    <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}}>
-                        <div style={{width: "200px", flexBasis: "70%"}}>
+                    <div
+                        style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <div style={{ width: "200px", flexBasis: "70%" }}>
                             <Input
                                 type="number"
                                 loading={bridgeLoading}
-                                onChange={(_, d) => {setNullifier(d.value); setWithdrawDisabled(false)}}
+                                onChange={(_, d) => {
+                                    setNullifier(d.value);
+                                    setWithdrawDisabled(false);
+                                }}
                                 placeholder="Please enter your secret code"
                                 defaultValue={nullifier}
-                                style={{marginBottom: "10px"}}
+                                style={{ marginBottom: "10px" }}
                             ></Input>
                         </div>
-                        <div style={{flexBasis: "20%"}}>
+                        <div style={{ flexBasis: "20%" }}>
                             <BlindStoreButton
                                 nullifier={nullifier}
                                 setPassphrase={setPassphrase}
